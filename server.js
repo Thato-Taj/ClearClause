@@ -3,13 +3,16 @@ const path = require('path');
 require('dotenv').config();
 const { summarizeText } = require('./services/summarizerService');
 
-const app = express();
+const app = express(); // This is the "app" that was missing!
 const port = 3000;
 
+// 1. Middleware: Crucial for reading JSON from your frontend
 app.use(express.json());
+
+// 2. Serve your frontend files from the 'public' folder
 app.use(express.static('public'));
 
-// SINGLE POST ROUTE: Using the service we tested
+// 3. Your Summarize Route
 app.post('/summarize', async (req, res) => {
     const { text } = req.body;
 
@@ -19,15 +22,15 @@ app.post('/summarize', async (req, res) => {
 
     try {
         const result = await summarizeText(text);
-        // Note: Your frontend expects { summary: "..." }
-        // Ensure your service returns exactly what the frontend needs
-        res.json(result);
+        console.log("Server received from Gemini:", result);
+        res.json(result); 
     } catch (error) {
-        console.error("Server Error:", error);
-        res.status(500).json({ error: "Failed to analyze text." });
+        console.error("Route Error:", error);
+        res.status(500).json({ error: "Analysis failed." });
     }
 });
 
+// 4. Start the engine
 app.listen(port, () => {
-    console.log(`ClearClause is running at http://localhost:${port}`);
+    console.log(`ClearClause running at http://localhost:${port}`);
 });

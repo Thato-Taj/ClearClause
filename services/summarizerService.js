@@ -1,45 +1,45 @@
-// services/summarizerService.js
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-require('dotenv').config();
-
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const summarizeText = async (text) => {
-    // Sticking with your preferred preview model
     const model = genAI.getGenerativeModel({ 
-        model: "gemini-3.1-flash-lite-preview" 
+        model: "gemini-3.1-flash-lite-preview",
+        generationConfig: { responseMimeType: "application/json" }
     });
 
     const prompt = `
-        Analyze these South African Terms and Conditions. 
-        Focus: Identify "High Risk" indemnity clauses.
-        
-        Return ONLY a raw JSON object with this exact structure:
+    Analyze these Terms & Conditions for a South African student audience. 
+    You MUST provide a 'meaning' field for every risk that explains it in simple, Grade 10 English.
+    
+    STRICT JSON STRUCTURE:
+    {
+      "summary": "overview of the document",
+      "risks": [
         {
-          "summary": "Short overview",
-          "risks": [
-            { "level": "High", "category": "Indemnity", "clause": "exact snippet" }
-          ]
+          "level": "High/Medium/Low",
+          "category": "e.g., Privacy",
+          "clause": "the original legal text",
+          "meaning": "The plain English translation of what this actually means for the user."
         }
+      ]
+    }
 
-        Text: ${text}`;
+    TEXT TO ANALYZE: ${text}`;
 
     try {
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        let rawText = response.text();
-
-        // CLEANING LOGIC: Finds the first '{' and last '}' to strip markdown
-        const jsonStart = rawText.indexOf('{');
-        const jsonEnd = rawText.lastIndexOf('}') + 1;
-        const jsonString = rawText.slice(jsonStart, jsonEnd);
-
-        const data = JSON.parse(jsonString);
+        const data = JSON.parse(response.text());
+        
+        // Log this to your VS Code terminal
+        console.log("--- AI RESPONSE START ---");
+        console.log(JSON.stringify(data, null, 2));
+        console.log("--- AI RESPONSE END ---");
+        
         return data;
     } catch (error) {
-        console.error("Gemini Service Error:", error);
-        // Return a default object so the test doesn't crash on undefined
-        return { summary: "Error parsing AI response", risks: [] };
+        console.error("Backend Error:", error);
+        return { summary: "Error parsing JSON.", risks: [] };
     }
 };
 

@@ -15,24 +15,34 @@
 
         <main>
             <section class="input-area">
-                <textarea id="termsInput" placeholder="Place the Terms and Conditions here..."></textarea>
+                <textarea id="termsInput" placeholder="Paste the Terms and Conditions here... (e.g., from a South African gym contract or app)"></textarea>
                 <button id="summarizeBtn">Summarize with Gemini</button>
             </section>
+
             <section id="resultArea" class="hidden">
-                <h2>Summary & Red Flags</h2>
-                <div id="summaryOutput">
-                </div>
-                <div class="audio-controls">
-                    <button id="readBtn">🔊 Read Aloud</button>
-                    <button id="stopBtn">🛑 Stop</button>
+                <div class="result-card">
+                    <h2>AI Analysis</h2>
+                    
+                    <div id="summaryOutput" class="summary-content"></div>
+
+                    <hr>
+
+                    <div id="riskArea"></div>
+
+                    <div class="audio-controls">
+                        <button id="readBtn" title="Read summary aloud">🔊 Read Aloud</button>
+                        <button id="stopBtn" title="Stop speaking">🛑 Stop</button>
+                    </div>
                 </div>
             </section>
         </main>
+
         <footer>
-            <p>&copy; 2026 ClearClause Project | Agile Sprint 1</p>
+            <p>&copy; 2026 ClearClause Project | Wits CS Agile Sprint 1</p>
+            <p><small>Always consult a legal professional for official advice.</small></p>
         </footer>
     </div>
+
     <script src="script.js"></script>
-    
 </body>
 </html>
